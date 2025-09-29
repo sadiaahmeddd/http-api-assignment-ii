@@ -1,21 +1,111 @@
-html, body {
-  height: 100%;
-  width: 100%;
+
+body {
   margin: 0;
-  padding: 0;
+  font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: #fafafa;
+  color: #111;
+}
+.wrap {
+  max-width: 920px;
+  margin: 28px auto 64px;
+  padding: 0 20px 40px;
+  background: #fff;
 }
 
-#top {
+/* Headers  */
+header h1 {
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #444;
+  margin: 0 0 6px;
+}
+header h2 {
+  font-size: 28px;
+  margin: 0 0 18px;
+}
+
+.block-title {
   text-align: center;
-  margin: 0 auto;
+  font-weight: 700;
+  margin: 18px 0 10px;
 }
 
-#top h1 {
-  font-size: 2em;
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0 14px;
+}
+.inline-form label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+.inline-form input,
+.inline-form select {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #111;
+  border-radius: 2px;
+}
+.inline-form button {
+  padding: 6px 12px;
+  border: 1px solid #888;
+  background: #eee;
+  color: #111;
+  border-radius: 2px;
+  cursor: pointer;
 }
 
-#content {
-  margin-top: 100px;
-  font-size: 2em;
+.explain {
+  max-width: 760px;
+  margin: 8px auto 6px;
+  line-height: 1.5;
+}
+
+/* Handout- */
+.handout-block {
+  margin: 20px auto 6px;
+  max-width: 760px;
+}
+.serif {
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+.heading {
   text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  margin: 18px 0 10px;
 }
+.braces {
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: transparent;
+  border: 0;
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+}
+.rule {
+  border: 0;
+  border-top: 2px solid #cfcfcf;
+  margin: 18px 0 14px;
+}
+.console-note {
+  margin: 0 0 18px;
+}
+
+/*  developer details */
+.details {
+  border: 1px solid #ddd;
+  background: #f8f8f8;
+  padding: 10px;
+  white-space: pre-wrap;
+  overflow: auto;
+}
+
+

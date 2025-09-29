@@ -1,0 +1,17 @@
+{
+  "name": "http-api-assignment-ii",
+  "version": "1.0.0",
+  "description": "RIT Rich Media - HTTP API HW II",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "pretest": "eslint server.js",
+    "test": "echo \"Running ESLint on server.js\" && eslint server.js || (echo \"ESLint errors found\" && exit 1)"
+  },
+  "engines": { "node": ">=18" },
+  "devDependencies": {
+    "eslint": "^9.8.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.1"
+  }
+}

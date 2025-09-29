@@ -1,36 +1,166 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <title>Our simple HTTP server</title>
-  <link rel="stylesheet" type="text/css" href="/style.css">
-  
-  <script>
-
-  </script>
+  <meta charset="utf-8" />
+  <title>HTTP API HW II</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <section id="top">
-    <h3>POST Status Code Tests</h3>
-    <form id="nameForm" action="/addUser" method="post">
-      <label for="name">Name: </label>
-      <input id="nameField" type="text" name="name" />
-      <label for="age">Age: </label>
-      <input id="ageField" type="number" name="age" min="0" max="100" step="1"/>
-      <input type="submit" value="Add User" />
+  <div class="wrap">
+   
+ 
+
+    <!-- Block 1: POST /addUser  from teh requirements-->
+    <h3 class="block-title">POST Status Code Tests</h3>
+    <form class="inline-form" onsubmit="return false;">
+      <label>Name:&nbsp;<input id="postName" /></label>
+      <label>Age:&nbsp;<input id="postAge" type="number" /></label>
+      <button id="btnAdd" type="button">Add User</button>
     </form>
-    <form id="userForm" action="/getUsers" method="get">
-      <select id='urlField'>
-        <option value='/getUsers'>/getUsers</option>
-        <option value='/notReal'>/notReal</option>
+
+    <p class="explain">
+      <code>/getUsers</code> HEAD request after hitting ‘Send’ with <code>/getUsers</code> and
+      ‘HEAD’ <b>BEFORE</b> addng a user. 
+    </p>
+
+    <!-- Block 2: GET/HEAD tester -->
+    <h3 class="block-title">POST Status Code Tests</h3>
+    <form class="inline-form" onsubmit="return false;">
+      <label>Name:&nbsp;<input id="name" /></label>
+      <label>Age:&nbsp;<input id="age" type="number" /></label>
+      <select id="endpoint">
+        <option value="/getUsers">/getUsers</option>
+        <option value="/notReal">/notReal</option>
       </select>
-      <select id="methodSelect">
-        <option value="get">GET</option>
-        <option value="head">HEAD</option>
+      <select id="method">
+        <option value="GET">GET</option>
+        <option value="HEAD">HEAD</option>
       </select>
-      <input type="submit" value="Get User" />
+      <button id="btnSend" type="button">Get User</button>
     </form>
-  </section>
-  <section id="content">
-  </section>
+
+    <!-- eoutput area -->
+    <section class="handout-block">
+      <div id="heading" class="heading serif">Success</div>
+      <pre id="braces" class="braces">{}</pre>
+      <hr class="rule" />
+      <p class="console-note">Example output of the JSON response printed to the console.</p>
+    </section>
+
+    <!--debugging -->
+    <pre id="details" class="details" hidden></pre>
+  </div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const heading = $('#heading');
+    const braces = $('#braces');
+    const details = $('#details');
+
+    // status
+    const statusHeading = (status) => {
+      if (status === 200) return 'Success';
+      if (status === 201) return 'Created';
+      if (status === 204) return 'No Content';
+      if (status === 400) return 'Bad Request';
+      if (status === 404) return 'Not Found';
+      if (status >= 500) return 'Server Error';
+      return `Status ${status}`;
+    };
+
+    const showBraces = (obj) => {
+      // pretty JSON) 
+      braces.textContent = JSON.stringify(obj ?? {}, null, 2);
+    };
+
+    const logAndMaybeShowDetails = (payload) => {
+      //  log to console 
+      console.log(payload);
+      
+    };
+
+    // GET / HEAD tester
+    $('#btnSend').addEventListener('click', async () => {
+      const endpoint = $('#endpoint').value;
+      const method = $('#method').value;
+
+      try {
+        const resp = await fetch(endpoint, { method });
+
+        heading.textContent = statusHeading(resp.status);
+
+        if (method === 'HEAD') {
+          // no body for HEAD
+          showBraces({});
+          logAndMaybeShowDetails({
+            endpoint, method, status: resp.status,
+            note: 'HEAD responses have no body.'
+          });
+          return;
+        }
+
+        const ct = resp.headers.get('content-type') || '';
+        if (ct.includes('application/json')) {
+          const json = await resp.json();
+          // For /getUsers GET before adding, this shows {}
+          showBraces(json.users ? json.users : json);
+          logAndMaybeShowDetails(json);
+        } else {
+          const text = await resp.text();
+          showBraces({ text });
+          logAndMaybeShowDetails({ text, endpoint, method, status: resp.status });
+        }
+      } catch (e) {
+        heading.textContent = 'Network Error';
+        showBraces({ error: String(e) });
+        logAndMaybeShowDetails({ error: String(e) });
+      }
+    });
+
+    // POST /addUser
+    $('#btnAdd').addEventListener('click', async () => {
+      const name = $('#postName').value.trim();
+      const age = $('#postAge').value;
+
+      try {
+        const resp = await fetch('/addUser', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, age })
+        });
+
+        heading.textContent = statusHeading(resp.status);
+
+        if (resp.status === 204) {
+          //  existing user 
+          showBraces({});
+          logAndMaybeShowDetails({ message: 'Updated existing user.', status: 204 });
+          return;
+        }
+
+        const ct = resp.headers.get('content-type') || '';
+        if (ct.includes('application/json')) {
+          const json = await resp.json();
+          
+          if (resp.status === 201 && json && json.message) {
+            showBraces({ Message: json.message });
+          } else {
+            showBraces(json);
+          }
+          logAndMaybeShowDetails(json);
+        } else {
+          const text = await resp.text();
+          showBraces({ text });
+          logAndMaybeShowDetails({ text, status: resp.status });
+        }
+      } catch (e) {
+        heading.textContent = 'Network Error';
+        showBraces({ error: String(e) });
+        logAndMaybeShowDetails({ error: String(e) });
+      }
+    });
+  </script>
 </body>
 </html>
+
